@@ -17,9 +17,10 @@ export type Answer = { status?: number; body: unknown };
  * with `answer`, which a test sets. Every request is kept in `received`.
  */
 export function fakeMaib() {
+	const received: Received[] = [];
 	const fake = {
 		baseUrl: "http://127.0.0.1:4736",
-		received: [] as Received[],
+		received,
 		answer: (_request: Received): Answer => ({ status: 404, body: {} }),
 		tokensIssued: 0,
 	};

@@ -30,8 +30,8 @@ const signed = (
 	body: string,
 	{
 		key = documented.signatureKey,
-		encoding = "base64" as "base64" | "hex",
-	} = {},
+		encoding = "base64",
+	}: { key?: string; encoding?: "base64" | "hex" } = {},
 ) =>
 	callback(body, {
 		"x-signature-timestamp": documented.timestamp,
