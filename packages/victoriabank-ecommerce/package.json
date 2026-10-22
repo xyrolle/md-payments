@@ -1,0 +1,31 @@
+{
+	"name": "victoriabank-ecommerce",
+	"version": "0.1.0",
+	"description": "Unofficial TypeScript client for the Victoriabank e-Commerce Gateway: signed authorizations, completions, reversals and callbacks.",
+	"keywords": [
+		"victoriabank",
+		"moldova",
+		"payments",
+		"ecommerce"
+	],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/xyrolle/md-payments.git",
+		"directory": "packages/victoriabank-ecommerce"
+	},
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"typecheck": "tsc -p tsconfig.build.json --noEmit"
+	}
+}
