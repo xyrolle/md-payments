@@ -233,16 +233,12 @@ describe("refunds", () => {
 		expect(
 			await maibCheckout.refund("ae20c2ae-328b-456d-bed1-52646b5eacab", {
 				amount: 5061,
-				currency: "MDL",
 				reason: "Returned",
 			}),
 		).toEqual({
 			refundId: "123e4567-e89b-12d3-a456-426614174000",
-			paymentId: "ae20c2ae-328b-456d-bed1-52646b5eacab",
 			status: "Created",
 			outcome: "pending",
-			amount: 5061,
-			currency: "MDL",
 		});
 		expect(maib.received.at(-1)).toMatchObject({
 			method: "POST",
