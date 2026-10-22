@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"target": "es2024",
+		"lib": ["es2024", "dom"],
+		"module": "nodenext",
+		"types": ["node"],
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"noImplicitOverride": true,
+		"verbatimModuleSyntax": true,
+		"erasableSyntaxOnly": true,
+		"rewriteRelativeImportExtensions": true,
+		"skipLibCheck": true,
+		"noEmit": true
+	},
+	"include": ["packages"],
+	"exclude": ["**/dist"]
+}
