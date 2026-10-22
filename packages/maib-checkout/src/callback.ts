@@ -89,9 +89,13 @@ async function checkSignature(
 		);
 }
 
-/** The 32 bytes of an HMAC-SHA256 written in hex or Base64. */
+/**
+ * The 32 bytes of an HMAC-SHA256 in the two encodings maib's "Callback
+ * Notifications" page allows: "Encode the resulting binary hash as lowercase
+ * hex or Base64."
+ */
 function signatureBytes(written: string): Uint8Array<ArrayBuffer> | undefined {
-	if (/^[0-9a-f]{64}$/i.test(written))
+	if (/^[0-9a-f]{64}$/.test(written))
 		return Uint8Array.from(written.match(/../g) ?? [], (pair) =>
 			Number.parseInt(pair, 16),
 		);
