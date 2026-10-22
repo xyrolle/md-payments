@@ -73,11 +73,23 @@ describe("verifyCallback", () => {
 		});
 	});
 
-	it("accepts a signature written in hex", async () => {
+	it("accepts a signature written in lowercase hex, as maib's docs allow", async () => {
 		const notice = await maib.verifyCallback(
 			signed(documented.body, { encoding: "hex" }),
 		);
 		expect(notice.outcome).toBe("paid");
+	});
+
+	it("refuses a signature in uppercase hex, which maib's docs do not allow", async () => {
+		const hex = createHmac("sha256", documented.signatureKey)
+			.update(`${documented.body}.${documented.timestamp}`)
+			.digest("hex");
+		await untrusted(
+			callback(documented.body, {
+				"x-signature-timestamp": documented.timestamp,
+				"x-signature": `sha256=${hex.toUpperCase()}`,
+			}),
+		);
 	});
 
 	it("refuses a body changed after signing", async () => {
