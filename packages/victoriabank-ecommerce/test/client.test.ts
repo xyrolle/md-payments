@@ -40,6 +40,12 @@ const approved = {
 	TEXT: "Approved",
 };
 
+const callback = (fields: Record<string, string>) =>
+	new Request("https://shop.example/victoriabank/callback", {
+		method: "POST",
+		body: new URLSearchParams(fields),
+	});
+
 const transaction = {
 	order: "001044",
 	amount: 22_500,
@@ -125,6 +131,64 @@ describe("authorizationForm", () => {
 				language: "ro",
 			}),
 		).rejects.toThrow(/openssl pkcs8 -topk8 -nocrypt/);
+	});
+});
+
+describe("verifyCallback", () => {
+	it("reads the bank's signed approval of an authorization", async () => {
+		expect(await vb.verifyCallback(callback(signedByBank(approved)))).toEqual({
+			outcome: "approved",
+			action: "0",
+			rc: "00",
+			text: "Approved",
+			order: "001044",
+			amount: 22_500,
+			currency: "MDL",
+			rrn: "628510496640",
+			intRef: "A1B2C3D4E5F6",
+			approval: "123456",
+		});
+	});
+
+	it("reads a declined callback whose RRN is empty", async () => {
+		const declined = signedByBank({
+			...approved,
+			ACTION: "2",
+			RC: "05",
+			RRN: "",
+			INT_REF: "",
+			APPROVAL: "",
+			TEXT: "Declined",
+		});
+		expect(await vb.verifyCallback(callback(declined))).toMatchObject({
+			outcome: "declined",
+			rc: "05",
+			rrn: undefined,
+			intRef: undefined,
+		});
+	});
+
+	it("refuses a callback changed after the bank signed it", async () => {
+		const changed = { ...signedByBank(approved), AMOUNT: "2.25" };
+		expect(await failure(vb.verifyCallback(callback(changed)))).toMatchObject({
+			kind: "untrusted",
+		});
+	});
+
+	it("refuses another terminal's callback", async () => {
+		const elsewhere = signedByBank({ ...approved, TERMINAL: "49800002" });
+		expect(await failure(vb.verifyCallback(callback(elsewhere)))).toMatchObject(
+			{
+				kind: "untrusted",
+			},
+		);
+	});
+
+	it("reads a callback naming another operation as unknown, since TRTYPE is not signed", async () => {
+		const renamed = signedByBank({ ...approved, TRTYPE: "21" });
+		expect((await vb.verifyCallback(callback(renamed))).outcome).toBe(
+			"unknown",
+		);
 	});
 });
 

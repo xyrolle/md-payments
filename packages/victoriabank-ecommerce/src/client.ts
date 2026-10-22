@@ -96,6 +96,21 @@ export class Victoriabank {
 		return { outcome: outcomeOf(action), action, rc, text };
 	}
 
+	/**
+	 * Checks that `request` is the bank's signed answer to an authorization,
+	 * posted to the callback URL, and reads it. The bank does not sign TRTYPE,
+	 * so a callback naming another operation is `unknown`.
+	 */
+	async verifyCallback(request: Request): Promise<Transaction> {
+		const fields = Object.fromEntries(
+			new URLSearchParams(await request.text()),
+		);
+		const transaction = await this.#trusted(fields);
+		return fields.TRTYPE === "0"
+			? transaction
+			: { ...transaction, outcome: "unknown" };
+	}
+
 	async #transact(
 		trtype: "21" | "24",
 		transaction: TransactionRef,
