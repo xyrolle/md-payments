@@ -22,9 +22,8 @@ export type NewCheckout = {
 };
 
 export type NewRefund = {
-	/** In minor units, at most what was paid and not yet given back. */
+	/** In minor units of the payment's currency, at most what was paid and not yet given back. */
 	amount: number;
-	currency: "MDL";
 	/** Why the money goes back, at most 500 characters. */
 	reason: string;
 };

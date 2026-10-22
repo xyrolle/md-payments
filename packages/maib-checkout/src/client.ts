@@ -9,7 +9,7 @@ import {
 } from "./checkout.ts";
 import { MaibError } from "./error.ts";
 import { type JsonObject, majorUnits, readEnvelope, text } from "./json.ts";
-import { refundOutcome } from "./outcome.ts";
+import { type RefundOutcome, refundOutcome } from "./outcome.ts";
 
 const REQUEST_TIMEOUT_MS = 30_000;
 /** A token is renewed this long before maib says it ends (it lives 300 s). */
@@ -71,7 +71,10 @@ export class MaibCheckout {
 	}
 
 	/** Asks maib to give back part or all of a payment. maib answers `Created`; `getRefund` tells the rest. */
-	async refund(paymentId: string, refund: NewRefund): Promise<Refund> {
+	async refund(
+		paymentId: string,
+		refund: NewRefund,
+	): Promise<{ refundId: string; status: string; outcome: RefundOutcome }> {
 		const result = await this.#call(
 			"POST",
 			`/v2/payments/${encodeURIComponent(paymentId)}/refund`,
@@ -84,14 +87,7 @@ export class MaibCheckout {
 				"malformed",
 				"maib answered the refund without its refundId or status. It may still be made: check the payment's refundedAmount before refunding again.",
 			);
-		return {
-			refundId,
-			paymentId,
-			status,
-			outcome: refundOutcome(status),
-			amount: refund.amount,
-			currency: refund.currency,
-		};
+		return { refundId, status, outcome: refundOutcome(status) };
 	}
 
 	/** Where a refund stands. */

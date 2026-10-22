@@ -49,17 +49,13 @@ const { outcome, payment } = await maib.getCheckout(checkoutId);
 
 // Give 100 MDL back.
 if (payment) {
-	await maib.refund(payment.paymentId, {
-		amount: 10_000,
-		currency: "MDL",
-		reason: "Returned",
-	});
+	await maib.refund(payment.paymentId, { amount: 10_000, reason: "Returned" });
 }
 ```
 
 ## API
 
-Amounts are integers in minor units (bani: 1 MDL is 100), always paired with a currency.
+Amounts are integers in minor units (bani: 1 MDL is 100). A checkout names its currency; a refund is in its payment's currency.
 
 `new MaibCheckout({ baseUrl, clientId, clientSecret, signatureKey })` takes the credentials from maibmerchants.md. `baseUrl` is `https://api.maibmerchants.md` in production and `https://sandbox.maibmerchants.md` for tests. The client gets an access token and renews it when it runs out.
 
@@ -67,7 +63,7 @@ Amounts are integers in minor units (bani: 1 MDL is 100), always paired with a c
 | ------------------------------------------------- | -------------------------------- | ---------------------------------------- |
 | `createCheckout(checkout)`                        | `POST /v2/checkouts`             | `{ checkoutId, checkoutUrl }`            |
 | `getCheckout(checkoutId)`                         | `GET /v2/checkouts/{id}`         | `Checkout`, with its `payment` once paid |
-| `refund(paymentId, { amount, currency, reason })` | `POST /v2/payments/{id}/refund`  | `Refund`, `Created` at first             |
+| `refund(paymentId, { amount, reason })`           | `POST /v2/payments/{id}/refund`  | `{ refundId, status, outcome }`          |
 | `getRefund(refundId)`                             | `GET /v2/payments/refunds/{id}`  | `Refund`                                 |
 | `verifyCallback(request)`                         | maib's callback to `callbackUrl` | `PaymentNotice`                          |
 
