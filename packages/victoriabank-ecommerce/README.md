@@ -103,6 +103,7 @@ A bad amount, order id or description throws a `RangeError` before anything is s
   - `verifyCallback` reads a callback only as the answer to an authorization; one naming another TRTYPE is `unknown`.
   - The terminal check only stops another terminal's answer sent by mistake.
   - The bank signs every merchant's answers with one key, so compare the order and amount with your own before acting.
+- **A signed callback can be replayed.** The bank signs only ACTION, RC, RRN, ORDER and AMOUNT, with no timestamp or nonce. Handle callbacks idempotently by ORDER and RRN, and confirm with `status()` or `complete()` before acting on money.
 - **Which INT_REF a reversal after a completion takes is unconfirmed.** The specification says the authorization's; the completion answers with its own. The client sends the one you pass.
 - **Retries:** the gateway answers a repeated completion or reversal as a duplicate, so sending one again after `unavailable` is safe. The bank's FAQ allows one reversal per transaction.
 - **Keys:** the merchant's private key must be PKCS#8 PEM and the bank's public key SPKI PEM. Encrypted keys aren't supported, since Web Crypto takes no passphrase. Convert with `openssl pkcs8 -topk8 -nocrypt -in key.pem`.
