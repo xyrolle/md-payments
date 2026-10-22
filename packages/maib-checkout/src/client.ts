@@ -1,3 +1,4 @@
+import { type PaymentNotice, verifyNotice } from "./callback.ts";
 import {
 	type Checkout,
 	type NewCheckout,
@@ -101,6 +102,11 @@ export class MaibCheckout {
 				`/v2/payments/refunds/${encodeURIComponent(refundId)}`,
 			),
 		);
+	}
+
+	/** Checks that `request` is maib's signed callback and reads it; throws `untrusted` when it is not. */
+	verifyCallback(request: Request): Promise<PaymentNotice> {
+		return verifyNotice(request, this.#options.signatureKey);
 	}
 
 	async #call(
