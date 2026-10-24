@@ -1,6 +1,6 @@
 # maib-checkout
 
-An unofficial TypeScript client for [maib e-Commerce Checkout](https://docs.maibmerchants.md/checkout): register a hosted checkout, read where it stands, refund a payment, and verify maib's signed callbacks.
+An unofficial TypeScript client for [maib e-Commerce Checkout](https://docs.maibmerchants.md/checkout): register a hosted checkout, read where it stands, cancel it, refund a payment, and verify maib's signed callbacks.
 
 It is not affiliated with maib. It needs nothing beyond `fetch` and Web Crypto, so it runs on Node 24, Bun, Deno and Cloudflare Workers.
 
@@ -63,6 +63,7 @@ Amounts are integers in minor units (bani: 1 MDL is 100). A checkout names its c
 | ------------------------------------------------- | -------------------------------- | ---------------------------------------- |
 | `createCheckout(checkout)`                        | `POST /v2/checkouts`             | `{ checkoutId, checkoutUrl }`            |
 | `getCheckout(checkoutId)`                         | `GET /v2/checkouts/{id}`         | `Checkout`, with its `payment` once paid |
+| `cancelCheckout(checkoutId)`                      | `POST /v2/checkouts/{id}/cancel` | nothing; the checkout is `Cancelled`     |
 | `refund(paymentId, { amount, reason })`           | `POST /v2/payments/{id}/refund`  | `{ refundId, status, outcome }`          |
 | `getRefund(refundId)`                             | `GET /v2/payments/refunds/{id}`  | `Refund`                                 |
 | `verifyCallback(request)`                         | maib's callback to `callbackUrl` | `PaymentNotice`                          |
@@ -100,7 +101,7 @@ A malformed amount (a negative number or a third decimal) is never rounded: it m
 - **The ending checkout statuses come from the documentation's descriptions.** `Expired`, `Abandoned`, `Cancelled` and `Failed` haven't been confirmed on the sandbox.
 - **maib sends callbacks after successful payments.** A failed or abandoned checkout is found with `getCheckout`.
 - **Only MDL.** maib's documentation says the API uses MDL.
-- **Not wrapped:** cancelling a checkout, the list endpoints, and the optional payer, language and item fields.
+- **Not wrapped:** the list endpoints, and the optional payer, language and item fields.
 - **The access token belongs to one client instance.** Calls that start together before it exists each get a token.
 - **Testing:** the test suite runs against maib's documented examples and a local stand-in for its API. `test/sandbox.test.ts` calls the real sandbox only when `MAIB_SANDBOX_CLIENT_ID` and `MAIB_SANDBOX_CLIENT_SECRET` are set, and it never runs in CI.
 
