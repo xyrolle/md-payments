@@ -78,7 +78,11 @@ export class Victoriabank {
 		return this.#transact("24", transaction);
 	}
 
-	/** Where an order's authorization or completion stands (TRTYPE 90). The answer is unsigned. */
+	/**
+	 * Where an order's authorization or completion stands (TRTYPE 90). The
+	 * answer is unsigned. Ask about the authorization until a completion was
+	 * sent: the gateway finds no completion that was never made.
+	 */
 	async status(
 		order: string,
 		operation: "authorization" | "completion",
