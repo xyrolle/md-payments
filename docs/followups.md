@@ -7,5 +7,5 @@
 
 ## victoriabank-ecommerce
 
-- **Record a status answer.** The TRTYPE 90 answer isn't in the bank's specification, and the client reads its table in the WooCommerce plugin's order. Done when answers for a held, a completed and an unknown order are recorded from the test gateway, the stand-in serves them, and the README's limitation is gone.
+- **Record a status answer.** The TRTYPE 90 answer isn't in the bank's specification, and the client reads its table in the WooCommerce plugin's order. Done when answers for a held, a completed and an unknown order, and for the completion of an order only held, are recorded from the test gateway, the stand-in serves them, and the README's limitation is gone.
 - **Confirm the INT_REF of a reversal after a completion.** The specification names the authorization's; the completion answers with its own. Done when a reversal after a completion is made on the test gateway and the README says which INT_REF it took.

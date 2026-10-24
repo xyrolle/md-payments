@@ -76,6 +76,8 @@ Amounts are integers in minor units (bani: 1 MDL is 100). An order id is 6 to 32
 
 `complete` and `reverse` take `{ order, amount, currency, rrn, intRef }`. The rrn and intRef are named by the bank's approval of the authorization.
 
+`status` asks about one transaction of the order. Ask about the authorization of an order whose callback never came, one you have given up on included: the payer may still have authorized it, and the money is then held on their card. Ask about the completion only once you have sent `complete`: the gateway finds no completion that was never made, so asking about it says nothing of a late authorization.
+
 Every answer carries the gateway's `action` and `rc` and an `outcome`:
 
 | ACTION | Gateway's meaning | `outcome` |
