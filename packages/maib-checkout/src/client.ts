@@ -70,6 +70,19 @@ export class MaibCheckout {
 		);
 	}
 
+	/** Ends a checkout that is not completed: it is `Cancelled` and cannot be resumed. */
+	async cancelCheckout(checkoutId: string): Promise<void> {
+		const result = await this.#call(
+			"POST",
+			`/v2/checkouts/${encodeURIComponent(checkoutId)}/cancel`,
+		);
+		if (text(result.status) !== "Cancelled")
+			throw new MaibError(
+				"malformed",
+				"maib answered the cancellation without the Cancelled status. Read the checkout with getCheckout to see where it stands.",
+			);
+	}
+
 	/** Asks maib to give back part or all of a payment. maib answers `Created`; `getRefund` tells the rest. */
 	async refund(
 		paymentId: string,

@@ -218,6 +218,37 @@ describe("getCheckout", () => {
 	});
 });
 
+describe("cancelCheckout", () => {
+	it("cancels a checkout that is not completed, sending nothing but its id", async () => {
+		maib.answer = () => ({
+			body: {
+				result: {
+					checkoutId: "5d526a22-9354-4721-99da-fa58fb53216e",
+					status: "Cancelled",
+				},
+				ok: true,
+				errors: null,
+			},
+		});
+		await client().cancelCheckout("5d526a22-9354-4721-99da-fa58fb53216e");
+		expect(maib.received.at(-1)).toEqual({
+			method: "POST",
+			path: "/v2/checkouts/5d526a22-9354-4721-99da-fa58fb53216e/cancel",
+			authorization: "Bearer token-1",
+			body: undefined,
+		});
+	});
+
+	it("reads an answer that does not say Cancelled as malformed", async () => {
+		maib.answer = () => ({
+			body: { result: { checkoutId: "c-1", status: "Completed" }, ok: true },
+		});
+		expect(await failure(client().cancelCheckout("c-1"))).toMatchObject({
+			kind: "malformed",
+		});
+	});
+});
+
 describe("refunds", () => {
 	it("asks for a refund in major units and reads where it stands", async () => {
 		const maibCheckout = client();

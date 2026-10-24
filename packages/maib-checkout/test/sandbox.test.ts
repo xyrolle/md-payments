@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { MaibCheckout } from "../src/index.ts";
 
 // Runs against maib's sandbox only when its credentials are set, and never in
-// CI. Paying the checkout needs a browser, so it stops at reading it back.
+// CI. Paying the checkout needs a browser, so it reads it back and cancels it.
 const { MAIB_SANDBOX_CLIENT_ID, MAIB_SANDBOX_CLIENT_SECRET } = process.env;
 
 describe.skipIf(!MAIB_SANDBOX_CLIENT_ID || !MAIB_SANDBOX_CLIENT_SECRET)(
 	"maib's sandbox",
 	() => {
-		it("registers a checkout and reads it back as pending", async () => {
+		it("registers a checkout, reads it back as pending and cancels it", async () => {
 			const maib = new MaibCheckout({
 				baseUrl: "https://sandbox.maibmerchants.md",
 				clientId: MAIB_SANDBOX_CLIENT_ID ?? "",
@@ -29,6 +29,11 @@ describe.skipIf(!MAIB_SANDBOX_CLIENT_ID || !MAIB_SANDBOX_CLIENT_SECRET)(
 				status: "WaitingForInit",
 				outcome: "pending",
 				amount: 1000,
+			});
+			await maib.cancelCheckout(checkoutId);
+			expect(await maib.getCheckout(checkoutId)).toMatchObject({
+				status: "Cancelled",
+				outcome: "failed",
 			});
 		});
 	},
